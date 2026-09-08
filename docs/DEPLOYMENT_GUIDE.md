@@ -18,6 +18,8 @@ When deploying to cloud platforms (Vercel, Render, Railway, AWS, or Azure), prov
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Yes | Client & Server | Public Supabase anonymous client key |
 | `SUPABASE_SERVICE_ROLE_KEY` | Yes | **Server Only** | Administrative service role key (Never expose to client!) |
 | `SUPABASE_JWT_SECRET` | Yes | Server | Supabase JWT Secret for token verification |
+| `GITHUB_CLIENT_ID` | Optional | Server | GitHub OAuth Client ID |
+| `GITHUB_CLIENT_SECRET` | Optional | **Server Only** | GitHub OAuth Client Secret |
 | `OPENROUTER_API_KEY` | Optional | **Server Only** | OpenRouter AI Gateway key for RAG & MCQ generation |
 | `OPENROUTER_MODEL` | Optional | Server | OpenRouter model ID (`google/gemini-2.0-flash-001`) |
 | `STORAGE_LOCAL_ROOT` | Yes | Server | Directory path for private document uploads (`./private_storage`) |
@@ -25,35 +27,26 @@ When deploying to cloud platforms (Vercel, Render, Railway, AWS, or Azure), prov
 
 > [!CAUTION]
 > **Secrets Protection Rule**
-> Never add `NEXT_PUBLIC_` prefix to server-only secrets such as `SUPABASE_SERVICE_ROLE_KEY` or `OPENROUTER_API_KEY`.
+> Never add `NEXT_PUBLIC_` prefix to server-only secrets such as `SUPABASE_SERVICE_ROLE_KEY`, `GITHUB_CLIENT_SECRET`, or `OPENROUTER_API_KEY`.
 
 ---
 
-## 2. Supabase Cloud Provisioning Steps
+## 2. Supabase OAuth Provider Configuration Guide
 
-1. **Create Supabase Project**:
-   - Go to [supabase.com](https://supabase.com) -> New Project.
-   - Project Name: `statkarmayogi-prod`
-   - Select Region: `South Asia (Mumbai)` or closest region.
-
-2. **Retrieve PostgreSQL Credentials**:
-   - Go to **Project Settings -> Database -> Connection String -> URI**.
-   - Copy string and update driver to `postgresql+asyncpg://`:
-     ```text
-     DATABASE_URL=postgresql+asyncpg://postgres:[YOUR-PASSWORD]@db.[PROJECT-REF].supabase.co:5432/postgres
-     ```
-
-3. **Retrieve Auth Keys**:
-   - Go to **Project Settings -> API**.
-   - Copy Project URL -> `NEXT_PUBLIC_SUPABASE_URL`
-   - Copy `anon` key -> `NEXT_PUBLIC_SUPABASE_ANON_KEY`
-   - Copy `service_role` key -> `SUPABASE_SERVICE_ROLE_KEY`
-   - Copy JWT Secret -> `SUPABASE_JWT_SECRET`
-
-4. **Create Private Storage Bucket**:
-   - Go to **Storage -> Create Bucket**.
-   - Bucket Name: `training_documents`
-   - Access: Set to **Private** (Public access disabled).
+### GitHub OAuth Setup
+1. Open [GitHub Developer Settings](https://github.com/settings/developers) -> **OAuth Apps -> New OAuth App**.
+2. Application Name: `StatKarmayogi AI`
+3. Homepage URL: `http://localhost:3000` (or production URL)
+4. Authorization Callback URL:
+   ```text
+   https://[YOUR-PROJECT-REF].supabase.co/auth/v1/callback
+   ```
+5. Click **Register Application**.
+6. Generate a new **Client Secret**.
+7. Copy **Client ID** and **Client Secret**.
+8. In Supabase Dashboard -> **Authentication -> Providers -> GitHub**:
+   - Toggle **Enable GitHub provider** -> ON.
+   - Paste **Client ID** & **Client Secret** -> Click **Save**.
 
 ---
 
