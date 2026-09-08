@@ -71,18 +71,18 @@ async def init_db_data():
         rc4 = RoleCompetency(role_id=role_objs["STAT_OFFICER"].id, competency_id=comp_objs["DATA_QUAL"].id, required_level=3)
         db.add_all([rc1, rc2, rc3, rc4])
 
-        # Seed Courses (from iGOT / Local Catalogue)
+        # Seed Courses (from iGOT / Local Catalogue) - Strictly Labeled Demo / Local
         course1 = Course(
-            title="Official Statistics & Survey Operations",
-            description="Comprehensive guide to sample survey design and official data collection",
+            title="Official Statistics & Survey Operations [DEMO CATALOGUE]",
+            description="Comprehensive guide to sample survey design and official data collection (DEMO DATA)",
             provider="LOCAL_CATALOGUE",
             duration_hours=20,
             level="Intermediate",
             external_url="https://igotkarmayogi.gov.in/courses/stat-ops"
         )
         course2 = Course(
-            title="Python for Statistical Data Analysis",
-            description="Hands-on Python programming for statistical officers and analysts",
+            title="Python for Statistical Data Analysis [DEMO CATALOGUE]",
+            description="Hands-on Python programming for statistical officers and analysts (DEMO DATA)",
             provider="LOCAL_CATALOGUE",
             duration_hours=15,
             level="Intermediate",
@@ -108,7 +108,7 @@ async def init_db_data():
         learner_emp = Employee(
             user_id=learner_user.id,
             employee_code="EMP-2026-001",
-            full_name="Rajesh Kumar",
+            full_name="Rajesh Kumar (DEMO LEARNER)",
             designation="Statistical Officer",
             department_id=dept.id,
             cadre="Indian Statistical Service",
@@ -130,7 +130,7 @@ async def init_db_data():
         admin_emp = Employee(
             user_id=admin_user.id,
             employee_code="EMP-2026-000",
-            full_name="Sunita Sharma",
+            full_name="Sunita Sharma (DEMO ADMIN)",
             designation="Director (Training & NSSTA)",
             department_id=dept.id,
             cadre="Indian Statistical Service",
@@ -141,7 +141,7 @@ async def init_db_data():
 
         # Seed Demo Assessment
         ass = Assessment(
-            title="Survey Methodology & Sampling Quiz",
+            title="Survey Methodology & Sampling Quiz [DEMO]",
             competency_id=comp_objs["SURVEY_METH"].id,
             difficulty_level="Intermediate",
             created_by=admin_user.id
@@ -180,7 +180,7 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(
     title="StatKarmayogi AI — Core Backend (Backdata)",
-    description="Authoritative Backend Data, Security, Deterministic Engines & API Contracts",
+    description="Authoritative Backend Data, Security, Deterministic Engines & API Contracts [DEMO DATA / LOCAL CATALOGUE]",
     version="1.0.0",
     lifespan=lifespan
 )
@@ -200,5 +200,6 @@ async def health_check():
     return {
         "status": "healthy",
         "service": "Backdata (StatKarmayogi Core Backend)",
+        "mode": "DEMO / LOCAL MOCK CATALOGUE",
         "version": "1.0.0"
     }
