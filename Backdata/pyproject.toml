@@ -1,0 +1,14 @@
+[project]
+name = "statkarmayogi-backdata"
+version = "0.1.0"
+description = "StatKarmayogi AI Core Backend, Security & Data Layer"
+readme = "README.md"
+requires-python = ">=3.10"
+
+[tool.pytest.ini_options]
+minversion = "7.0"
+addopts = "-ra -q"
+testpaths = [
+    "tests",
+]
+asyncio_mode = "auto"
