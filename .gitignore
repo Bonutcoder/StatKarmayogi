@@ -2,8 +2,6 @@
 __pycache__/
 *.py[cod]
 *$py.class
-
-# C extensions
 *.so
 
 # Distribution / packaging
@@ -27,10 +25,10 @@ share/python-wheels/
 MANIFEST
 
 # Virtual Environments
-.venv/
 venv/
-ENV/
+.venv/
 env/
+ENV/
 env.bak/
 venv.bak/
 
@@ -41,7 +39,12 @@ venv.bak/
 *.pem
 *.key
 
-# Vector Databases & Local Stores
+# Database, Uploads & Local Storage
+*.db
+*.sqlite3
+uploads/
+private_storage/
+temp/
 chroma_db/
 .chroma/
 
@@ -49,6 +52,7 @@ chroma_db/
 .pytest_cache/
 .coverage
 .coverage.*
+htmlcov/
 nosetests.xml
 coverage.xml
 *.cover
