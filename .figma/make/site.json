@@ -1,0 +1,10 @@
+{
+  "description": "Enables government professionals to assess competencies, identify skill gaps, and monitor department analytics with secure, data-driven insights.",
+  "robots": {
+    "index": false
+  },
+  "accessibility": {
+    "addBypassLinks": false,
+    "ignoreReducedMotion": false
+  }
+}
