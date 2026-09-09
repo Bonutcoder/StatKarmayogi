@@ -20,8 +20,13 @@ import {
 
 // In the Vite preview, route AI calls through the dev-server proxy so the
 // browser never needs direct access to the host's localhost:8001 service.
-export const BACKENGINE_PORT_URL = import.meta.env.VITE_BACKENGINE_URL || "/ai-api";
-export const CORE_PORT_URL = "http://localhost:8000";
+export const BACKENGINE_PORT_URL =
+  import.meta.env.VITE_AI_API_URL ||
+  import.meta.env.VITE_BACKENGINE_URL ||
+  "/ai-api";
+export const CORE_PORT_URL =
+  import.meta.env.VITE_API_URL ||
+  "http://localhost:8000";
 
 export interface RagAssessmentQuestion {
   id: string;

@@ -507,6 +507,45 @@ export default function AssessmentsPage({
             <div style={{ fontSize: 15, fontWeight: 600, color: slate, lineHeight: 1.6 }}>
               {currentQ.question}
             </div>
+
+            {currentQ.options.length === 0 && (
+              <div style={{ marginTop: 18, display: "flex", gap: 12, alignItems: "center", flexWrap: "wrap" }}>
+                <button
+                  onClick={() => {
+                    setSelectedDomainFilter("all");
+                    setRagSession(null);
+                  }}
+                  style={{
+                    padding: "8px 18px",
+                    background: coral,
+                    color: "#fff",
+                    border: "none",
+                    borderRadius: 4,
+                    fontSize: 12,
+                    fontWeight: 700,
+                    cursor: "pointer",
+                  }}
+                >
+                  Switch to Official iGOT Courses →
+                </button>
+                <button
+                  onClick={() => handleGenerateRagAssessment()}
+                  disabled={isGeneratingRag}
+                  style={{
+                    padding: "8px 16px",
+                    background: "#fff",
+                    border: `1px solid ${border}`,
+                    color: slate,
+                    borderRadius: 4,
+                    fontSize: 12,
+                    fontWeight: 600,
+                    cursor: isGeneratingRag ? "not-allowed" : "pointer",
+                  }}
+                >
+                  {isGeneratingRag ? "Connecting to AI Engine..." : "Retry Document Generation"}
+                </button>
+              </div>
+            )}
           </div>
 
           {/* Options */}
