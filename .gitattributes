@@ -1,5 +1,7 @@
 # Git LFS Tracking Rules
-# Generated for binary, large, and non-diffable file types
+# Exempt web frontend assets from Git LFS so Vercel/cloud builders can bundle them directly
+public/**            -filter -diff -merge
+src/**               -filter -diff -merge
 
 # ---------------------------------------------------------------------------
 # Images & Graphics
@@ -144,3 +146,11 @@
 *.stl                filter=lfs diff=lfs merge=lfs -text
 *.nc                 filter=lfs diff=lfs merge=lfs -text
 *.mat                filter=lfs diff=lfs merge=lfs -text
+
+# ---------------------------------------------------------------------------
+# Frontend Web Assets Overrides (Must NOT use LFS so Vercel builds properly)
+# ---------------------------------------------------------------------------
+public/*             -filter -diff -merge
+public/**/*          -filter -diff -merge
+src/*                -filter -diff -merge
+src/**/*             -filter -diff -merge

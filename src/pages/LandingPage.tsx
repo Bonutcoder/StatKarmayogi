@@ -1,4 +1,5 @@
 import React, { useState, useRef } from "react";
+import BrandLogo from "../components/BrandLogo";
 
 function Tilt3DCard({
   children,
@@ -126,15 +127,7 @@ export default function LandingPage({
             }}
             onClick={onLogin}
           >
-            <img
-              src="/Logo.png"
-              alt="StatKarmayogi"
-              style={{
-                height: 52,
-                width: "auto",
-                objectFit: "contain",
-              }}
-            />
+            <BrandLogo height={52} />
           </div>
 
           {/* Nav Links & Authentication Buttons */}
@@ -441,7 +434,7 @@ export default function LandingPage({
       {/* Footer */}
       <footer style={{ borderTop: "1px solid #EADFD4", padding: "40px 24px", background: "#FFFDF9", textAlign: "center" }}>
         <div style={{ maxWidth: 1200, margin: "0 auto", display: "flex", flexDirection: "column", alignItems: "center", gap: 12 }}>
-          <img src="/Logo.png" alt="StatKarmayogi" style={{ height: 48, width: "auto" }} />
+          <BrandLogo height={48} />
           <div style={{ fontSize: 13, color: "#64707B" }}>
             StatKarmayogi AI · Competency Intelligence Platform
           </div>

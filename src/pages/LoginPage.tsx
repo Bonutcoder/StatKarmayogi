@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { UserProfile } from "../types";
 import { API_URL, ApiError, login, register } from "../services/coreApi";
+import BrandLogo from "../components/BrandLogo";
 
 export default function LoginPage({
   initialMode = "login",
@@ -110,7 +111,7 @@ export default function LoginPage({
         {/* Expanded Header Logo */}
         <div style={{ textAlign: "center", marginBottom: 24 }}>
           <div style={{ display: "flex", justifyContent: "center", alignItems: "center", marginBottom: 14 }}>
-            <img src="/Logo.png" alt="StatKarmayogi" style={{ height: 60, width: "auto", objectFit: "contain" }} />
+            <BrandLogo height={60} />
           </div>
           <h1 style={{ fontSize: 22, fontWeight: 700, color: "#17202B", margin: "4px 0 4px", fontFamily: "'Playfair Display', serif" }}>
             {mode === "login" ? "Sign In" : "Sign Up"}

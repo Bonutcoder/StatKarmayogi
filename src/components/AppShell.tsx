@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Tab, UserProfile } from "../types";
+import BrandLogo from "./BrandLogo";
 
 export const navy = "#0F2744";
 export const slate = "#2C302E";
@@ -346,7 +347,7 @@ export function Sidebar({
       {/* Brand */}
       <div style={{ padding: "20px 18px 16px", borderBottom: `1px solid ${border}` }}>
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          <img src="/Logo.png" alt="StatKarmayogi" style={{ height: 32, width: "auto" }} />
+          <BrandLogo height={32} />
         </div>
         <div
           style={{
