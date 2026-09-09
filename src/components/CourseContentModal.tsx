@@ -20,6 +20,33 @@ export default function CourseContentModal({
   const content = getCourseContent(courseId);
   const [activeTab, setActiveTab] = useState<"modules" | "assessments" | "overview">("modules");
   const [activeModuleIndex, setActiveModuleIndex] = useState<number>(0);
+  const [downloadStatus, setDownloadStatus] = useState<string | null>(null);
+
+  const handleDownloadSyllabus = () => {
+    if (!content) return;
+    try {
+      setDownloadStatus("Generating syllabus PDF…");
+      generateCourseSyllabusPdf(content);
+      setDownloadStatus("✓ Official Syllabus PDF downloaded successfully!");
+      setTimeout(() => setDownloadStatus(null), 3500);
+    } catch (err) {
+      setDownloadStatus("Failed to generate PDF. Please try again.");
+      setTimeout(() => setDownloadStatus(null), 3500);
+    }
+  };
+
+  const handleDownloadModule = () => {
+    if (!content) return;
+    try {
+      setDownloadStatus(`Generating Module ${activeModuleIndex + 1} notes PDF…`);
+      generateModulePdf(content, activeModuleIndex);
+      setDownloadStatus(`✓ Module ${activeModuleIndex + 1} Notes PDF downloaded successfully!`);
+      setTimeout(() => setDownloadStatus(null), 3500);
+    } catch (err) {
+      setDownloadStatus("Failed to generate module PDF. Please try again.");
+      setTimeout(() => setDownloadStatus(null), 3500);
+    }
+  };
 
   if (!content) {
     return (
@@ -135,7 +162,7 @@ export default function CourseContentModal({
 
           <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
             <button
-              onClick={() => generateCourseSyllabusPdf(content)}
+              onClick={handleDownloadSyllabus}
               style={{
                 padding: "6px 14px",
                 background: "#fff",
@@ -203,6 +230,27 @@ export default function CourseContentModal({
             </button>
           </div>
         </div>
+
+        {/* Download Status Toast / Banner */}
+        {downloadStatus && (
+          <div
+            style={{
+              background: downloadStatus.startsWith("✓") ? "#ECFDF5" : "#FFFBEB",
+              borderBottom: `1px solid ${downloadStatus.startsWith("✓") ? "#A7F3D0" : "#FDE68A"}`,
+              padding: "8px 24px",
+              fontSize: 12,
+              fontWeight: 600,
+              color: downloadStatus.startsWith("✓") ? "#065F46" : "#92400E",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              animation: "fadeIn 0.2s ease-in-out",
+            }}
+          >
+            <span>{downloadStatus}</span>
+            <span style={{ fontSize: 10, opacity: 0.8 }}>Saved to Downloads</span>
+          </div>
+        )}
 
         {/* Tab Navigation */}
         <div style={{ display: "flex", borderBottom: `1px solid ${border}`, background: "#fff" }}>
@@ -285,7 +333,7 @@ export default function CourseContentModal({
 
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                   <button
-                    onClick={() => generateModulePdf(content, activeModuleIndex)}
+                    onClick={handleDownloadModule}
                     style={{
                       padding: "7px 14px",
                       background: "#fff",
