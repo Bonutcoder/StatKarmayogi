@@ -1,0 +1,99 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Playfair+Display:wght@600;700;800&display=swap');
+@import 'tailwindcss';
+
+:root {
+  --cream: #FBF5ED;
+  --paper: #FFFDF9;
+  --white: #FFFFFF;
+  --ink: #17202B;
+  --muted: #64707B;
+  --coral: #EE705E;
+  --coral-dark: #D95D4D;
+  --orange: #FF6B35;
+  --line: #EADFD4;
+  --shadow: 0 18px 50px rgba(38, 35, 30, 0.08);
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  font-family: 'Outfit', 'Plus Jakarta Sans', 'Inter', system-ui, sans-serif;
+  background-color: var(--cream);
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.mono {
+  font-family: 'Space Grotesk', 'Outfit', sans-serif;
+  font-variant-numeric: tabular-nums;
+}
+
+.num,
+.number-font {
+  font-family: 'Space Grotesk', 'Outfit', sans-serif;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
+
+.serif {
+  font-family: 'Playfair Display', serif;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #CBD5E1 transparent;
+  box-sizing: border-box;
+}
+
+@keyframes floatSlow {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-8px); }
+}
+
+@keyframes floatSlow3D {
+  0%, 100% { transform: translateY(0px) rotateX(0deg) rotateY(0deg); }
+  50% { transform: translateY(-12px) rotateX(6deg) rotateY(-6deg); }
+}
+
+@keyframes pulseGlow {
+  0%, 100% { opacity: 0.4; transform: scale(1); }
+  50% { opacity: 0.7; transform: scale(1.08); }
+}
+
+.animate-float {
+  animation: floatSlow 6s ease-in-out infinite;
+}
+
+.animate-float-3d {
+  animation: floatSlow3D 6s ease-in-out infinite;
+}
+
+.animate-pulse-glow {
+  animation: pulseGlow 4s ease-in-out infinite;
+}
+
+.card-white {
+  background: #FFFFFF;
+  border: 1px solid var(--line);
+  box-shadow: 0 10px 30px rgba(38, 35, 30, 0.05);
+}
+
+.card-white-hover {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.card-white-hover:hover {
+  transform: translateY(-4px);
+  border-color: var(--coral);
+  box-shadow: 0 20px 40px -15px rgba(238, 112, 94, 0.2);
+}
+
+.gradient-text-orange {
+  background: linear-gradient(135deg, #EE705E 0%, #FF6B35 50%, #D95D4D 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}

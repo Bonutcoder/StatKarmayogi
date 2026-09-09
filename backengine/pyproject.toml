@@ -1,0 +1,40 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "statkarmayogi-backengine"
+version = "0.1.0"
+description = "Competency Intelligence, RAG & AI Engine for StatKarmayogi AI (MoSPI / NSSTA / iGOT Karmayogi)"
+readme = "README.md"
+requires-python = ">=3.10"
+authors = [
+    { name = "StatKarmayogi AI Engineering Team - Person 2" }
+]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+    "Framework :: FastAPI",
+]
+dependencies = [
+    "fastapi>=0.100.0",
+    "uvicorn>=0.22.0",
+    "pydantic>=2.0.0",
+    "pydantic-settings>=2.0.0",
+    "httpx>=0.24.0",
+]
+
+[project.optional-dependencies]
+ai = [
+    "sentence-transformers>=2.2.0",
+    "chromadb>=0.4.0",
+    "pymupdf>=1.23.0",
+]
+test = [
+    "pytest>=7.0.0",
+    "pytest-asyncio>=0.21.0",
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["app*"]

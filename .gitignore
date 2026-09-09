@@ -2,34 +2,93 @@
 __pycache__/
 *.py[cod]
 *$py.class
+*.so
 
-# Environment variables & secrets
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual Environments
+venv/
+.venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# Environment Variables & Secrets (SECURITY.md)
 .env
 .env.local
 .env.*.local
 *.pem
 *.key
 
-# Virtual environments
-venv/
-.venv/
-env/
-ENV/
-
-# IDE files
-.vscode/
-.idea/
-*.swp
-*.swo
-
-# Testing & Coverage
-.pytest_cache/
-.coverage
-htmlcov/
-
-# Database & Uploads
+# Database, Uploads & Local Storage
 *.db
 *.sqlite3
 uploads/
 private_storage/
 temp/
+chroma_db/
+.chroma/
+
+# Unit Test & Coverage
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+
+# IDE & Editor Configurations
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Operating System Files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Node / Frontend Artifacts
+node_modules/
+dist/
+build/
+.cache/
+.env*
+.vite/
+vite.config.*.timestamp-*
+*.tsbuildinfo
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+*-debug.log*
+logs/
+*.log
+.claude-replay.*
+.tmp-*
+
+# Platform-managed agentplat state
+/.plugins/
+/.opencode-skills/
