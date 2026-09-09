@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { auditHistoryData } from "../data/mockData";
+import { auditHistoryData } from "../data/emptyData";
 import { slate, coral, emerald, muted, border, panel, bg } from "../components/AppShell";
 import { EmptyState } from "../components/UIStates";
 
@@ -58,7 +58,7 @@ export default function AuditPage({ search }: { search: string }) {
               fontSize: 10,
               fontWeight: 700,
               color: emerald,
-              fontFamily: "JetBrains Mono, monospace",
+              fontFamily: "'Space Grotesk', 'Outfit', sans-serif",
               letterSpacing: "0.06em",
             }}
           >
@@ -88,7 +88,7 @@ export default function AuditPage({ search }: { search: string }) {
                       color: muted,
                       borderBottom: `1px solid ${border}`,
                       borderRight: `1px solid ${border}`,
-                      fontFamily: "JetBrains Mono, monospace",
+                      fontFamily: "'Space Grotesk', 'Outfit', sans-serif",
                       letterSpacing: "0.06em",
                       whiteSpace: "nowrap",
                     }}
@@ -103,25 +103,25 @@ export default function AuditPage({ search }: { search: string }) {
                 const b = actionBadge(ev.action);
                 return (
                   <tr key={ev.id} style={{ background: i % 2 === 0 ? "#fff" : bg }}>
-                    <td style={{ padding: "10px 14px", fontSize: 11, fontFamily: "JetBrains Mono, monospace", color: muted, borderBottom: `1px solid ${border}`, borderRight: `1px solid ${border}`, whiteSpace: "nowrap" }}>
+                    <td style={{ padding: "10px 14px", fontSize: 11, fontFamily: "'Space Grotesk', 'Outfit', sans-serif", color: muted, borderBottom: `1px solid ${border}`, borderRight: `1px solid ${border}`, whiteSpace: "nowrap" }}>
                       {ev.ts}
                     </td>
                     <td style={{ padding: "10px 14px", borderBottom: `1px solid ${border}`, borderRight: `1px solid ${border}`, whiteSpace: "nowrap" }}>
-                      <span style={{ padding: "2px 8px", border: `1px solid ${b.border}`, background: b.bg, color: b.color, fontSize: 10, fontWeight: 700, fontFamily: "JetBrains Mono, monospace" }}>
+                      <span style={{ padding: "2px 8px", border: `1px solid ${b.border}`, background: b.bg, color: b.color, fontSize: 10, fontWeight: 700, fontFamily: "'Space Grotesk', 'Outfit', sans-serif" }}>
                         {ev.action}
                       </span>
                     </td>
                     <td style={{ padding: "10px 14px", fontSize: 12, color: slate, fontWeight: 600, borderBottom: `1px solid ${border}`, borderRight: `1px solid ${border}` }}>
                       {ev.user}
                     </td>
-                    <td style={{ padding: "10px 14px", fontSize: 11, fontFamily: "JetBrains Mono, monospace", color: muted, borderBottom: `1px solid ${border}`, borderRight: `1px solid ${border}` }}>
+                    <td style={{ padding: "10px 14px", fontSize: 11, fontFamily: "'Space Grotesk', 'Outfit', sans-serif", color: muted, borderBottom: `1px solid ${border}`, borderRight: `1px solid ${border}` }}>
                       {ev.session}
                     </td>
-                    <td style={{ padding: "10px 14px", fontSize: 11, fontFamily: "JetBrains Mono, monospace", color: muted, borderBottom: `1px solid ${border}`, borderRight: `1px solid ${border}` }}>
+                    <td style={{ padding: "10px 14px", fontSize: 11, fontFamily: "'Space Grotesk', 'Outfit', sans-serif", color: muted, borderBottom: `1px solid ${border}`, borderRight: `1px solid ${border}` }}>
                       {ev.ip}
                     </td>
                     <td style={{ padding: "10px 14px", borderBottom: `1px solid ${border}` }}>
-                      <span style={{ color: emerald, fontSize: 11, fontWeight: 700, fontFamily: "JetBrains Mono, monospace" }}>
+                      <span style={{ color: emerald, fontSize: 11, fontWeight: 700, fontFamily: "'Space Grotesk', 'Outfit', sans-serif" }}>
                         VALID ✓
                       </span>
                     </td>

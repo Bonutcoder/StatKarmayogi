@@ -23,7 +23,7 @@ export function AIStatusBadge({
         fontSize: 10,
         fontWeight: 700,
         color: cfg.color,
-        fontFamily: "JetBrains Mono, monospace",
+        fontFamily: "'Space Grotesk', 'Outfit', sans-serif",
         letterSpacing: "0.06em",
       }}
     >
@@ -34,9 +34,9 @@ export function AIStatusBadge({
 }
 
 export function IntegrationBadge({
-  status = "DEMO",
+  status = "OFFLINE",
 }: {
-  status?: "iGOT" | "DEMO" | "OFFLINE";
+  status?: "iGOT" | "LOCAL" | "OFFLINE";
 }) {
   if (status === "iGOT") {
     return (
@@ -48,14 +48,14 @@ export function IntegrationBadge({
           color: "#059669",
           fontSize: 10,
           fontWeight: 700,
-          fontFamily: "JetBrains Mono, monospace",
+          fontFamily: "'Space Grotesk', 'Outfit', sans-serif",
         }}
       >
         iGOT KARMAYOGI · CONNECTED
       </span>
     );
   }
-  if (status === "DEMO") {
+  if (status === "LOCAL") {
     return (
       <span
         style={{
@@ -65,10 +65,10 @@ export function IntegrationBadge({
           color: "#64748B",
           fontSize: 10,
           fontWeight: 700,
-          fontFamily: "JetBrains Mono, monospace",
+          fontFamily: "'Space Grotesk', 'Outfit', sans-serif",
         }}
       >
-        DEMO CATALOGUE · ACTIVE
+        LOCAL CATALOGUE · ACTIVE
       </span>
     );
   }
@@ -81,7 +81,7 @@ export function IntegrationBadge({
         color: "#DC2626",
         fontSize: 10,
         fontWeight: 700,
-        fontFamily: "JetBrains Mono, monospace",
+        fontFamily: "'Space Grotesk', 'Outfit', sans-serif",
       }}
     >
       iGOT · UNAVAILABLE

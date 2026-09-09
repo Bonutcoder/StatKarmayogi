@@ -11,7 +11,7 @@ from backengine.app.assessment.models import (
 )
 from backengine.app.assessment.generator import AssessmentGenerator
 from backengine.app.assessment.scoring import AssessmentScoringEngine
-from backengine.app.rag.vector_store import VectorStore
+from backengine.app.rag.runtime import vector_store
 from backengine.app.ai.openrouter import OpenRouterAIProvider
 from backengine.app.ai.mock_ai import MockAIProvider
 from backengine.app.core.config import get_settings
@@ -19,7 +19,6 @@ from backengine.app.core.config import get_settings
 router = APIRouter()
 settings = get_settings()
 
-vector_store = VectorStore()
 ai_provider = (
     MockAIProvider()
     if settings.USE_MOCK_AI or not settings.OPENROUTER_API_KEY

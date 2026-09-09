@@ -1,7 +1,16 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Tab, UserProfile, AssessmentSubmission } from "./types";
-import { initialProfiles } from "./data/mockData";
-import { GovStrip, TopBar, Sidebar, Toast, NotifPanel, bg } from "./components/AppShell";
+import { TopBar, Sidebar, Toast, NotifPanel, bg } from "./components/AppShell";
+import { checkCoreHealth, clearSession, completeGithubLogin } from "./services/coreApi";
+import { DomainEnrollment } from "./data/domainData";
+import {
+  loadDomainEnrollments,
+  removeLegacyDemoDomainEnrollments,
+  saveDomainEnrollment,
+  markCourseCompleted,
+} from "./services/domainService";
+import AddDomainModal from "./components/AddDomainModal";
+import CourseContentModal from "./components/CourseContentModal";
 
 // Modular Pages
 import LandingPage from "./pages/LandingPage";
@@ -13,26 +22,83 @@ import LearningPage from "./pages/LearningPage";
 import AssessmentsPage from "./pages/AssessmentsPage";
 import AssessmentResultPage from "./pages/AssessmentResultPage";
 import AssessmentReviewPage from "./pages/AssessmentReviewPage";
+import EvidenceAuditPage from "./pages/EvidenceAuditPage";
 import TrainingMaterialsPage from "./pages/TrainingMaterialsPage";
-import EmployeesAdminPage from "./pages/EmployeesAdminPage";
 import CourseIntegrationPage from "./pages/CourseIntegrationPage";
-import AnalyticsPage from "./pages/AnalyticsPage";
-import AuditPage from "./pages/AuditPage";
 import SettingsPage from "./pages/SettingsPage";
 
 export default function App() {
   const [tab, setTab] = useState<Tab>("landing");
-  const [user, setUser] = useState<UserProfile>(initialProfiles[0]);
+  const [user, setUser] = useState<UserProfile | null>(() => {
+    try {
+      const saved = sessionStorage.getItem("statkarmayogi.user_profile");
+      if (saved) return JSON.parse(saved);
+    } catch { }
+    return null;
+  });
   const [search, setSearch] = useState("");
   const [showNotif, setShowNotif] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
   const [latestSubmission, setLatestSubmission] = useState<AssessmentSubmission | null>(null);
   const [showPersonaPicker, setShowPersonaPicker] = useState(false);
+  const [apiOnline, setApiOnline] = useState<boolean>(false);
+
+  // Domain Streams & Assessment states
+  const [domainEnrollments, setDomainEnrollments] = useState<DomainEnrollment[]>(() =>
+    loadDomainEnrollments()
+  );
+  const [isAddDomainModalOpen, setIsAddDomainModalOpen] = useState<boolean>(false);
+  const [activeAssessmentCourseId, setActiveAssessmentCourseId] = useState<string | undefined>(undefined);
+  const [activeAssessmentTier, setActiveAssessmentTier] = useState<"easy" | "medium" | "difficult">("easy");
+  const [studyModalCourseId, setStudyModalCourseId] = useState<string | null>(null);
+  const [ragAssessmentSource, setRagAssessmentSource] = useState<{ id: string; title: string } | null>(null);
+
+  useEffect(() => {
+    if (removeLegacyDemoDomainEnrollments()) {
+      setDomainEnrollments([]);
+    }
+  }, []);
 
   const showToast = (msg: string) => {
     setToast(msg);
     setTimeout(() => setToast(null), 3200);
   };
+
+  const handleRefreshApi = async () => {
+    const status = await checkCoreHealth();
+    setApiOnline(status.online);
+    if (status.online) {
+      showToast(`Connected to FastAPI Backend (v${status.version || "1.0.0"}) on Port 8000.`);
+    } else {
+      showToast("Backend Server is offline. Live data is unavailable.");
+    }
+  };
+
+  useEffect(() => {
+    checkCoreHealth().then((status) => {
+      setApiOnline(status.online);
+    });
+  }, []);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.hash.slice(1));
+    const githubToken = params.get("github_token");
+    const oauthError = params.get("oauth_error");
+    if (oauthError) {
+      window.history.replaceState(null, "", window.location.pathname);
+      showToast(`GitHub sign-in failed: ${oauthError}`);
+      return;
+    }
+    if (!githubToken) return;
+    completeGithubLogin(githubToken)
+      .then((profile) => {
+        setUser(profile);
+        setTab("dashboard");
+        showToast(`Welcome, ${profile.name}`);
+      })
+      .catch(() => showToast("GitHub sign-in could not establish a platform session."))
+      .finally(() => window.history.replaceState(null, "", window.location.pathname));
+  }, []);
 
   const handleSetTab = (t: Tab) => {
     setTab(t);
@@ -40,9 +106,52 @@ export default function App() {
     setShowNotif(false);
   };
 
+  const handleLogout = () => {
+    clearSession();
+    handleSetTab("landing");
+    showToast("Logged out successfully. Secure session ended.");
+  };
+
+  const handleUpdateUser = (updatedFields: Partial<UserProfile>) => {
+    setUser((prev) => {
+      if (!prev) return prev;
+      const next = { ...prev, ...updatedFields };
+      try {
+        sessionStorage.setItem("statkarmayogi.user_profile", JSON.stringify(next));
+      } catch { }
+      return next;
+    });
+  };
+
   const handleAssessmentSubmit = (sub: AssessmentSubmission) => {
     setLatestSubmission(sub);
-    setTab("assessment-result");
+    // Refresh domain enrollments if updated
+    setDomainEnrollments(loadDomainEnrollments());
+  };
+
+  const handleSaveDomainEnrollment = (domainId: string, completedCourseIds: string[]) => {
+    const updated = saveDomainEnrollment(domainId, completedCourseIds);
+    setDomainEnrollments(updated);
+    showToast("Domain stream updated successfully! Dashboard & Skill Gaps recalculated.");
+  };
+
+  const handleMarkCourseCompleted = (courseId: string) => {
+    const updated = markCourseCompleted(courseId);
+    setDomainEnrollments(updated);
+    showToast("Course marked as completed! Competency level updated.");
+  };
+
+  const handleLaunchAssessment = (courseId: string, tier: "easy" | "medium" | "difficult" = "easy") => {
+    // Clear any local RAG source so iGOT course uses its own built-in questions
+    setRagAssessmentSource(null);
+    setActiveAssessmentCourseId(courseId);
+    setActiveAssessmentTier(tier);
+    handleSetTab("assessments");
+  };
+
+  const handleGenerateDocumentAssessment = (document: { id: string; title: string }) => {
+    setRagAssessmentSource(document);
+    handleSetTab("assessments");
   };
 
   // If public landing page is active
@@ -50,29 +159,37 @@ export default function App() {
     return (
       <>
         <LandingPage
-          onEnterPortal={() => handleSetTab("dashboard")}
           onLogin={() => handleSetTab("login")}
+          onSignUp={() => handleSetTab("signup")}
         />
         {toast && <Toast msg={toast} onClose={() => setToast(null)} />}
       </>
     );
   }
 
-  // If login page is active
-  if (tab === "login") {
+  // If login or signup page is active
+  if (tab === "login" || tab === "signup") {
     return (
       <>
         <LoginPage
+          initialMode={tab === "signup" ? "signup" : "login"}
           onLoginSuccess={(u) => {
             setUser(u);
+            try {
+              sessionStorage.setItem("statkarmayogi.user_profile", JSON.stringify(u));
+            } catch { }
             handleSetTab("dashboard");
-            showToast(`Welcome back, ${u.name} (${u.role})`);
+            showToast(`Welcome, ${u.name} (${u.role})`);
           }}
           onBackToLanding={() => handleSetTab("landing")}
         />
         {toast && <Toast msg={toast} onClose={() => setToast(null)} />}
       </>
     );
+  }
+
+  if (!user) {
+    return <LoginPage initialMode="login" onLoginSuccess={(u) => { setUser(u); handleSetTab("dashboard"); }} onBackToLanding={() => handleSetTab("landing")} />;
   }
 
   // Internal Official Platform Workspace
@@ -88,16 +205,9 @@ export default function App() {
         background: bg,
       }}
     >
-      {/* Official Government Strip */}
-      <GovStrip
-        user={user}
-        onGoToLanding={() => handleSetTab("landing")}
-        onSwitchPersona={() => setShowPersonaPicker(true)}
-      />
-
       {/* Main Workspace Layout */}
       <div style={{ display: "flex", flex: 1, overflow: "hidden" }}>
-        <Sidebar tab={tab} setTab={handleSetTab} user={user} />
+        <Sidebar tab={tab} setTab={handleSetTab} user={user} onLogout={handleLogout} />
 
         <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden", position: "relative" }}>
           <TopBar
@@ -112,47 +222,102 @@ export default function App() {
           {/* Active Screen Router */}
           <main style={{ flex: 1, display: "flex", overflow: "hidden" }}>
             {tab === "dashboard" && (
-              <DashboardPage user={user} setTab={handleSetTab} />
+              <DashboardPage
+                user={user}
+                setTab={handleSetTab}
+                domainEnrollments={domainEnrollments}
+                onOpenAddDomain={() => setIsAddDomainModalOpen(true)}
+                onMarkCourseCompleted={handleMarkCourseCompleted}
+                onLaunchAssessment={handleLaunchAssessment}
+                onViewCourseContent={(cId) => setStudyModalCourseId(cId)}
+              />
             )}
             {tab === "competencies" && (
-              <CompetenciesPage search={search} />
+              <CompetenciesPage
+                search={search}
+                domainEnrollments={domainEnrollments}
+                onOpenAddDomain={() => setIsAddDomainModalOpen(true)}
+              />
             )}
             {tab === "skill-gaps" && (
-              <SkillGapsPage search={search} setTab={handleSetTab} />
+              <SkillGapsPage
+                search={search}
+                setTab={handleSetTab}
+                domainEnrollments={domainEnrollments}
+                onOpenAddDomain={() => setIsAddDomainModalOpen(true)}
+                onMarkCourseCompleted={handleMarkCourseCompleted}
+              />
             )}
             {tab === "learning" && (
-              <LearningPage search={search} showToast={showToast} />
+              <LearningPage
+                search={search}
+                showToast={showToast}
+                domainEnrollments={domainEnrollments}
+                onOpenAddDomain={() => setIsAddDomainModalOpen(true)}
+                onMarkCourseCompleted={handleMarkCourseCompleted}
+                onLaunchAssessment={handleLaunchAssessment}
+              />
             )}
             {tab === "assessments" && (
-              <AssessmentsPage onSubmitAssessment={handleAssessmentSubmit} showToast={showToast} />
+              <AssessmentsPage
+                initialCourseId={activeAssessmentCourseId}
+                initialTier={activeAssessmentTier}
+                onSubmitAssessment={handleAssessmentSubmit}
+                showToast={showToast}
+                onCourseCompleted={handleMarkCourseCompleted}
+                ragAssessmentSource={ragAssessmentSource}
+                onRagAssessmentStarted={() => undefined}
+              />
             )}
             {tab === "assessment-result" && (
               <AssessmentResultPage submission={latestSubmission} setTab={handleSetTab} />
             )}
             {tab === "assessment-review" && (
-              <AssessmentReviewPage />
+              <AssessmentReviewPage setTab={handleSetTab} />
             )}
+            {tab === "evidence-audit" && <EvidenceAuditPage setTab={handleSetTab} />}
             {tab === "materials" && (
-              <TrainingMaterialsPage search={search} showToast={showToast} />
-            )}
-            {tab === "employees" && (
-              <EmployeesAdminPage search={search} showToast={showToast} />
+              <TrainingMaterialsPage search={search} showToast={showToast} onGenerateAssessment={handleGenerateDocumentAssessment} />
             )}
             {tab === "integrations" && (
               <CourseIntegrationPage showToast={showToast} />
             )}
-            {tab === "analytics" && (
-              <AnalyticsPage search={search} />
-            )}
-            {tab === "audit" && (
-              <AuditPage search={search} />
-            )}
             {tab === "settings" && (
-              <SettingsPage user={user} showToast={showToast} />
+              <SettingsPage
+                user={user}
+                showToast={showToast}
+                onLogout={handleLogout}
+                onUpdateUser={handleUpdateUser}
+              />
             )}
           </main>
         </div>
       </div>
+
+      {/* Add Domain / Learning Stream Modal */}
+      {isAddDomainModalOpen && (
+        <AddDomainModal
+          isOpen={isAddDomainModalOpen}
+          onClose={() => setIsAddDomainModalOpen(false)}
+          onSaveDomain={(enrollment) =>
+            handleSaveDomainEnrollment(enrollment.domainId, enrollment.selectedCourseIds)
+          }
+          existingEnrollments={domainEnrollments}
+        />
+      )}
+
+      {/* Course Study & Syllabus Modal */}
+      {studyModalCourseId && (
+        <CourseContentModal
+          courseId={studyModalCourseId}
+          isOpen={Boolean(studyModalCourseId)}
+          onClose={() => setStudyModalCourseId(null)}
+          onStartAssessment={(cId, tier) => {
+            setStudyModalCourseId(null);
+            handleLaunchAssessment(cId, tier);
+          }}
+        />
+      )}
 
       {/* Persona Switcher Modal */}
       {showPersonaPicker && (
@@ -190,50 +355,8 @@ export default function App() {
               </button>
             </div>
 
-            <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 18 }}>
-              {initialProfiles.map((p) => {
-                const active = user.id === p.id;
-                return (
-                  <button
-                    key={p.id}
-                    onClick={() => {
-                      setUser(p);
-                      setShowPersonaPicker(false);
-                      showToast(`Switched active profile to ${p.name} (${p.role})`);
-                    }}
-                    style={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                      padding: "12px 16px",
-                      border: `1px solid ${active ? "#FF6F59" : "#E2E8F0"}`,
-                      background: active ? "#FFF5F3" : "#F8FAFC",
-                      cursor: "pointer",
-                      textAlign: "left",
-                    }}
-                  >
-                    <div>
-                      <div style={{ fontSize: 13, fontWeight: 700, color: "#2C302E" }}>
-                        {p.name}
-                      </div>
-                      <div style={{ fontSize: 11, color: "#64748B" }}>{p.roleTitle}</div>
-                    </div>
-                    <span
-                      style={{
-                        padding: "3px 8px",
-                        border: "1px solid #E2E8F0",
-                        background: "#fff",
-                        fontSize: 10,
-                        fontWeight: 700,
-                        color: "#2C302E",
-                        fontFamily: "JetBrains Mono, monospace",
-                      }}
-                    >
-                      {p.role}
-                    </span>
-                  </button>
-                );
-              })}
+            <div style={{ marginBottom: 18, color: "#64748B", fontSize: 13 }}>
+              Persona switching is disabled because the connected backend session is authoritative.
             </div>
           </div>
         </div>

@@ -14,10 +14,16 @@ export function GovStrip({
   user,
   onSwitchPersona,
   onGoToLanding,
+  apiOnline = false,
+  onRefreshApi,
+  onLogout,
 }: {
   user: UserProfile;
   onSwitchPersona?: () => void;
   onGoToLanding?: () => void;
+  apiOnline?: boolean;
+  onRefreshApi?: () => void;
+  onLogout?: () => void;
 }) {
   return (
     <div
@@ -40,9 +46,9 @@ export function GovStrip({
             background: "none",
             border: "none",
             color: "#CBD5E1",
-            fontSize: 10,
+            fontSize: 11,
             fontWeight: 700,
-            fontFamily: "JetBrains Mono, monospace",
+            fontFamily: "'Outfit', 'Plus Jakarta Sans', system-ui, sans-serif",
             cursor: "pointer",
             display: "flex",
             alignItems: "center",
@@ -50,49 +56,99 @@ export function GovStrip({
             padding: 0,
           }}
         >
-          ← PUBLIC SITE
+          ← HOME
         </button>
-        <span style={{ color: "#475569", fontSize: 10 }}>|</span>
+        <span style={{ color: "#475569", fontSize: 11 }}>|</span>
         <div
           style={{
             fontSize: 11,
             fontWeight: 700,
             color: "#94A3B8",
-            letterSpacing: "0.12em",
-            fontFamily: "JetBrains Mono, monospace",
+            letterSpacing: "0.08em",
+            fontFamily: "'Outfit', 'Plus Jakarta Sans', system-ui, sans-serif",
           }}
         >
-          GOVERNMENT OF INDIA · MINISTRY OF STATISTICS & PROGRAMME IMPLEMENTATION
+          STATKARMAYOGI LEARNING PLATFORM
         </div>
       </div>
       <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
         <button
-          onClick={onSwitchPersona}
-          title="Switch Demo Role"
+          onClick={onRefreshApi}
+          title={apiOnline ? "API Online on Port 8000. Click to re-check." : "API Standby / Offline. Click to reconnect."}
           style={{
-            background: "rgba(255,255,255,0.08)",
-            border: "1px solid rgba(255,255,255,0.18)",
-            color: "#E2E8F0",
-            fontSize: 10,
-            fontWeight: 700,
+            display: "flex",
+            alignItems: "center",
+            gap: 6,
+            background: apiOnline ? "rgba(5, 150, 105, 0.15)" : "rgba(245, 158, 11, 0.15)",
+            border: `1px solid ${apiOnline ? "rgba(5, 150, 105, 0.4)" : "rgba(245, 158, 11, 0.4)"}`,
             padding: "2px 8px",
-            fontFamily: "JetBrains Mono, monospace",
+            borderRadius: 999,
             cursor: "pointer",
+            transition: "all 0.2s",
           }}
         >
-          ROLE: {user.role} ▾
+          <span
+            style={{
+              width: 6,
+              height: 6,
+              borderRadius: "50%",
+              background: apiOnline ? emerald : "#F59E0B",
+              boxShadow: apiOnline ? "0 0 6px rgba(5, 150, 105, 0.6)" : "none",
+            }}
+          />
+          <span
+            style={{
+              fontSize: 10,
+              fontWeight: 700,
+              color: apiOnline ? "#34D399" : "#FBBF24",
+              fontFamily: "'Outfit', sans-serif",
+              letterSpacing: "0.03em",
+            }}
+          >
+            {apiOnline ? "API: ONLINE (:8000)" : "API: STANDBY"}
+          </span>
         </button>
-        <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
           <div style={{ width: 6, height: 6, background: emerald, borderRadius: "50%" }} />
           <span
             style={{
               fontSize: 11,
               color: "#94A3B8",
-              fontFamily: "JetBrains Mono, monospace",
+              fontFamily: "'Outfit', 'Plus Jakarta Sans', system-ui, sans-serif",
+              letterSpacing: "0.02em",
             }}
           >
             SECURE SESSION · {user.email}
           </span>
+          {onLogout && (
+            <button
+              onClick={onLogout}
+              title="End session and log out"
+              style={{
+                background: "rgba(239, 68, 68, 0.18)",
+                border: "1px solid rgba(239, 68, 68, 0.4)",
+                color: "#FCA5A5",
+                fontSize: 10,
+                fontWeight: 700,
+                padding: "2px 8px",
+                borderRadius: 4,
+                cursor: "pointer",
+                transition: "all 0.2s",
+                marginLeft: 4,
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = "#EF4444";
+                e.currentTarget.style.color = "#FFFFFF";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = "rgba(239, 68, 68, 0.18)";
+                e.currentTarget.style.color = "#FCA5A5";
+              }}
+            >
+              LOG OUT ⎋
+            </button>
+          )}
         </div>
       </div>
     </div>
@@ -190,37 +246,19 @@ export function TopBar({
           }}
         >
           Notifications
-          <span
-            style={{
-              position: "absolute",
-              top: -6,
-              right: -10,
-              width: 16,
-              height: 16,
-              background: coral,
-              borderRadius: "50%",
-              fontSize: 9,
-              fontWeight: 800,
-              color: "#fff",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            3
-          </span>
         </button>
-        <div style={{ display: "flex", alignItems: "center", gap: 10, paddingLeft: 20, borderLeft: `1px solid ${border}` }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 14, paddingLeft: 20, borderLeft: `1px solid ${border}` }}>
           <div
             style={{
-              width: 32,
-              height: 32,
+              width: 34,
+              height: 34,
               background: slate,
               color: "#fff",
+              borderRadius: 6,
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              fontSize: 12,
+              fontSize: 13,
               fontWeight: 800,
             }}
           >
@@ -230,7 +268,7 @@ export function TopBar({
             <div style={{ color: slate, fontSize: 13, fontWeight: 700, lineHeight: 1.2 }}>
               {user.name}
             </div>
-            <div style={{ color: muted, fontSize: 10, fontFamily: "JetBrains Mono, monospace" }}>
+            <div style={{ color: muted, fontSize: 10, fontFamily: "'Space Grotesk', 'Outfit', sans-serif" }}>
               {user.department}
             </div>
           </div>
@@ -244,10 +282,12 @@ export function Sidebar({
   tab,
   setTab,
   user,
+  onLogout,
 }: {
   tab: Tab;
   setTab: (t: Tab) => void;
   user: UserProfile;
+  onLogout?: () => void;
 }) {
   const mainNav: { label: string; id: Tab }[] = [
     { label: "Dashboard", id: "dashboard" },
@@ -256,14 +296,12 @@ export function Sidebar({
     { label: "Learning & Courses", id: "learning" },
     { label: "Assessments", id: "assessments" },
     { label: "Assessment Review", id: "assessment-review" },
+    { label: "Grounded Evidence Audit", id: "evidence-audit" },
     { label: "Training Materials", id: "materials" },
   ];
 
   const adminNav: { label: string; id: Tab }[] = [
-    { label: "Department Analytics", id: "analytics" },
-    { label: "Employee Directory", id: "employees" },
     { label: "iGOT Integration", id: "integrations" },
-    { label: "System Audit", id: "audit" },
     { label: "Settings", id: "settings" },
   ];
 
@@ -307,17 +345,17 @@ export function Sidebar({
     >
       {/* Brand */}
       <div style={{ padding: "20px 18px 16px", borderBottom: `1px solid ${border}` }}>
-        <div style={{ fontSize: 15, fontWeight: 800, color: slate, letterSpacing: "-0.02em" }}>
-          stat<span style={{ color: coral }}>karmayogi</span>
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <img src="/Logo.png" alt="StatKarmayogi" style={{ height: 32, width: "auto" }} />
         </div>
         <div
           style={{
-            fontSize: 10,
+            fontSize: 0,
             fontWeight: 700,
             color: muted,
             letterSpacing: "0.12em",
             marginTop: 2,
-            fontFamily: "JetBrains Mono, monospace",
+            fontFamily: "'Space Grotesk', 'Outfit', sans-serif",
           }}
         >
           COMPETENCY INTELLIGENCE
@@ -333,7 +371,7 @@ export function Sidebar({
             fontWeight: 700,
             color: muted,
             letterSpacing: "0.12em",
-            fontFamily: "JetBrains Mono, monospace",
+            fontFamily: "'Space Grotesk', 'Outfit', sans-serif",
           }}
         >
           LEARNER SUITE
@@ -347,7 +385,7 @@ export function Sidebar({
             fontWeight: 700,
             color: muted,
             letterSpacing: "0.12em",
-            fontFamily: "JetBrains Mono, monospace",
+            fontFamily: "'Space Grotesk', 'Outfit', sans-serif",
           }}
         >
           ADMIN & ACADEMY PANEL
@@ -356,21 +394,27 @@ export function Sidebar({
       </div>
 
       {/* Footer badge */}
-      <div style={{ padding: 16, borderTop: `1px solid ${border}` }}>
+      <div style={{ padding: 14, borderTop: `1px solid ${border}`, display: "flex", flexDirection: "column", gap: 8 }}>
+        {onLogout && (
+          <button onClick={onLogout} style={{ width: "100%", padding: "8px 10px", border: "1px solid #FCA5A5", background: "#FEF2F2", color: "#B91C1C", fontSize: 11, fontWeight: 700, cursor: "pointer", borderRadius: 4 }}>
+            Log out
+          </button>
+        )}
         <div
           style={{
             padding: "6px 10px",
             border: `1px solid ${border}`,
             background: panel,
-            fontSize: 11,
+            fontSize: 0,
             fontWeight: 700,
             color: muted,
-            fontFamily: "JetBrains Mono, monospace",
+            fontFamily: "'Space Grotesk', 'Outfit', sans-serif",
             letterSpacing: "0.06em",
             textAlign: "center",
           }}
         >
-          DEMO CATALOGUE — Active
+          <span style={{ fontSize: 10 }}>STATKARMAYOGI AI</span>
+          STATKARMAYOGI · MoSPI AI
         </div>
       </div>
     </aside>
@@ -378,13 +422,6 @@ export function Sidebar({
 }
 
 export function NotifPanel({ onClose }: { onClose: () => void }) {
-  const [items, setItems] = useState([
-    { title: "Assessment Due", body: "Survey Methodology assessment due in 48 hours.", time: "2h ago", read: false },
-    { title: "Mastery Updated", body: "Your Statistics competency was updated to Level 4.", time: "5h ago", read: false },
-    { title: "New Material Added", body: "GIS Fundamentals — Video Series added to your catalogue.", time: "1d ago", read: false },
-    { title: "Skill Gap Resolved", body: "SQL & Databases gap closed — target level achieved.", time: "2d ago", read: true },
-  ]);
-
   return (
     <div
       style={{
@@ -400,38 +437,11 @@ export function NotifPanel({ onClose }: { onClose: () => void }) {
       }}
     >
       <div style={{ padding: "12px 16px", borderBottom: `1px solid ${border}`, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <div style={{ fontSize: 12, fontWeight: 700, color: slate, fontFamily: "JetBrains Mono, monospace", letterSpacing: "0.07em" }}>NOTIFICATIONS</div>
+        <div style={{ fontSize: 12, fontWeight: 700, color: slate, fontFamily: "'Space Grotesk', 'Outfit', sans-serif", letterSpacing: "0.07em" }}>NOTIFICATIONS</div>
         <button onClick={onClose} style={{ background: "none", border: "none", color: muted, fontSize: 18, cursor: "pointer", lineHeight: 1 }}>×</button>
       </div>
-      {items.map((n, i) => (
-        <div
-          key={i}
-          onClick={() => setItems((p) => p.map((x, idx) => idx === i ? { ...x, read: true } : x))}
-          style={{
-            padding: "13px 16px",
-            borderBottom: `1px solid ${border}`,
-            background: n.read ? "#fff" : "#F8FAFC",
-            cursor: "pointer",
-            display: "flex",
-            gap: 10,
-            alignItems: "flex-start",
-          }}
-        >
-          <div style={{ width: 8, height: 8, borderRadius: "50%", background: n.read ? "transparent" : coral, flexShrink: 0, marginTop: 4 }} />
-          <div style={{ flex: 1 }}>
-            <div style={{ fontSize: 12, fontWeight: 700, color: slate, marginBottom: 2 }}>{n.title}</div>
-            <div style={{ fontSize: 11, color: muted, lineHeight: 1.5 }}>{n.body}</div>
-            <div style={{ fontSize: 10, color: muted, marginTop: 4, fontFamily: "JetBrains Mono, monospace" }}>{n.time}</div>
-          </div>
-        </div>
-      ))}
-      <div style={{ padding: "10px 16px" }}>
-        <button
-          onClick={() => setItems((p) => p.map((x) => ({ ...x, read: true })))}
-          style={{ background: "none", border: "none", fontSize: 12, color: coral, fontWeight: 700, cursor: "pointer", padding: 0 }}
-        >
-          Mark all as read
-        </button>
+      <div style={{ padding: "28px 16px", textAlign: "center", color: muted, fontSize: 12 }}>
+        No notifications.
       </div>
     </div>
   );

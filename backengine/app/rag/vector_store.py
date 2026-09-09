@@ -6,6 +6,8 @@ Uses ChromaDB when available, with a built-in in-memory cosine vector index fall
 
 from typing import List, Dict, Any, Optional
 import math
+import json
+from pathlib import Path
 from backengine.app.core.config import get_settings, Settings
 from backengine.app.rag.chunker import DocumentChunk
 from backengine.app.rag.embeddings import EmbeddingProvider
@@ -38,6 +40,7 @@ class VectorStore:
 
         # In-memory storage: { department_id: [ {chunk, embedding} ] }
         self._isolated_stores: Dict[str, List[Dict[str, Any]]] = {}
+        self._fallback_store_file = Path(self.settings.VECTOR_STORE_PATH) / "fallback_vectors.json"
 
         # Attempt ChromaDB initialization
         self._chroma_client = None
@@ -46,6 +49,33 @@ class VectorStore:
             self._chroma_client = chromadb.PersistentClient(path=self.settings.VECTOR_STORE_PATH)
         except Exception:
             self._chroma_client = None
+
+        self._load_fallback_store()
+
+    def _load_fallback_store(self) -> None:
+        """Restore locally indexed chunks after a development-server reload."""
+        try:
+            raw = json.loads(self._fallback_store_file.read_text(encoding="utf-8"))
+            for department_id, saved_chunks in raw.items():
+                chunks = [DocumentChunk.model_validate(chunk) for chunk in saved_chunks]
+                embeddings = self.embedding_provider.embed_texts([chunk.chunk_text for chunk in chunks])
+                self._isolated_stores[department_id] = [
+                    {"chunk": chunk, "embedding": embedding}
+                    for chunk, embedding in zip(chunks, embeddings)
+                ]
+        except (FileNotFoundError, json.JSONDecodeError, OSError, ValueError):
+            pass
+
+    def _persist_fallback_store(self) -> None:
+        try:
+            self._fallback_store_file.parent.mkdir(parents=True, exist_ok=True)
+            serializable = {
+                department_id: [item["chunk"].model_dump() for item in items]
+                for department_id, items in self._isolated_stores.items()
+            }
+            self._fallback_store_file.write_text(json.dumps(serializable), encoding="utf-8")
+        except OSError:
+            pass
 
     def _get_collection_name(self, department_id: str) -> str:
         """Sanitizes department id for vector collection name."""
@@ -99,6 +129,8 @@ class VectorStore:
                 })
                 count += 1
 
+        self._persist_fallback_store()
+
         return count
 
     def search(
@@ -113,7 +145,7 @@ class VectorStore:
         Never crosses department boundaries.
         """
         k = top_k or self.settings.RAG_TOP_K
-        threshold = min_similarity or self.settings.RAG_MIN_SIMILARITY
+        threshold = self.settings.RAG_MIN_SIMILARITY if min_similarity is None else min_similarity
         query_emb = self.embedding_provider.embed_query(query)
 
         # Department boundary check
@@ -147,5 +179,6 @@ class VectorStore:
                 item for item in self._isolated_stores[department_id]
                 if item["chunk"].document_id != document_id
             ]
+            self._persist_fallback_store()
             return initial - len(self._isolated_stores[department_id])
         return 0

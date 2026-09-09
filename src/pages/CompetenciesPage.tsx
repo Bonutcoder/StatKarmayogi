@@ -1,13 +1,23 @@
 import React, { useState } from "react";
-import { competenciesData } from "../data/mockData";
+import { DomainEnrollment } from "../data/domainData";
+import { computeCompetenciesFromEnrollments } from "../services/domainService";
 import { slate, coral, emerald, muted, border, panel, bg } from "../components/AppShell";
 import { EmptyState } from "../components/UIStates";
 
-export default function CompetenciesPage({ search }: { search: string }) {
+export default function CompetenciesPage({
+  search,
+  domainEnrollments = [],
+  onOpenAddDomain,
+}: {
+  search: string;
+  domainEnrollments?: DomainEnrollment[];
+  onOpenAddDomain?: () => void;
+}) {
   const [filter, setFilter] = useState<"All" | "Core" | "Advanced" | "Foundational">("All");
+  const competencies = computeCompetenciesFromEnrollments(domainEnrollments);
   const q = search.toLowerCase();
 
-  const filtered = competenciesData
+  const filtered = competencies
     .filter((c) => filter === "All" || c.category === filter)
     .filter(
       (c) =>
@@ -33,39 +43,70 @@ export default function CompetenciesPage({ search }: { search: string }) {
         <div>
           <div style={{ fontSize: 20, fontWeight: 800, color: slate }}>Competency Framework</div>
           <div style={{ fontSize: 12, color: muted, marginTop: 3 }}>
-            All competencies mapped to MoSPI role profiles · iGOT–Karmayogi v3.1 Standards
+            All competencies mapped to MoSPI role profiles & active learning domains · iGOT–Karmayogi v3.1 Standards
           </div>
         </div>
 
-        {/* Category Filter Pills */}
-        <div style={{ display: "flex", gap: 1, background: border }}>
-          {(["All", "Core", "Advanced", "Foundational"] as const).map((f) => (
+        <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
+          {onOpenAddDomain && (
             <button
-              key={f}
-              onClick={() => setFilter(f)}
+              onClick={onOpenAddDomain}
               style={{
                 padding: "6px 14px",
-                border: "none",
-                background: filter === f ? slate : "#fff",
-                color: filter === f ? "#fff" : muted,
+                background: coral,
+                border: `1px solid ${coral}`,
+                color: "#fff",
                 fontSize: 11,
                 fontWeight: 700,
                 cursor: "pointer",
-                fontFamily: "JetBrains Mono, monospace",
+                borderRadius: 4,
+                boxShadow: "0 2px 8px rgba(255, 111, 89, 0.25)",
               }}
             >
-              {f.toUpperCase()}
+              + Add Domain
             </button>
-          ))}
+          )}
+
+          {/* Category Filter Pills */}
+          <div style={{ display: "flex", gap: 1, background: border }}>
+            {(["All", "Core", "Advanced", "Foundational"] as const).map((f) => (
+              <button
+                key={f}
+                onClick={() => setFilter(f)}
+                style={{
+                  padding: "6px 14px",
+                  border: "none",
+                  background: filter === f ? slate : "#fff",
+                  color: filter === f ? "#fff" : muted,
+                  fontSize: 11,
+                  fontWeight: 700,
+                  cursor: "pointer",
+                  fontFamily: "'Space Grotesk', 'Outfit', sans-serif",
+                }}
+              >
+                {f.toUpperCase()}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
       {filtered.length === 0 ? (
         <EmptyState
           title="No Competencies Found"
-          description={`No competencies matched your filter "${filter}" or query "${search}".`}
-          actionLabel="Reset Filters"
-          onAction={() => setFilter("All")}
+          description={
+            domainEnrollments.length === 0
+              ? "You haven't enrolled in any learning domains yet. Click '+ Add Domain' to start building your competency framework."
+              : `No competencies matched your filter "${filter}" or query "${search}".`
+          }
+          actionLabel={domainEnrollments.length === 0 ? "Add Domain" : "Reset Filters"}
+          onAction={() => {
+            if (domainEnrollments.length === 0 && onOpenAddDomain) {
+              onOpenAddDomain();
+            } else {
+              setFilter("All");
+            }
+          }}
         />
       ) : (
         <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 14 }}>
@@ -82,6 +123,7 @@ export default function CompetenciesPage({ search }: { search: string }) {
                   padding: "18px 20px",
                   display: "flex",
                   flexDirection: "column",
+                  borderRadius: 6,
                 }}
               >
                 <div
@@ -106,7 +148,7 @@ export default function CompetenciesPage({ search }: { search: string }) {
                         fontSize: 10,
                         fontWeight: 700,
                         color: muted,
-                        fontFamily: "JetBrains Mono, monospace",
+                        fontFamily: "'Space Grotesk', 'Outfit', sans-serif",
                         background: panel,
                       }}
                     >
@@ -120,7 +162,7 @@ export default function CompetenciesPage({ search }: { search: string }) {
                           fontSize: 10,
                           fontWeight: 700,
                           color: emerald,
-                          fontFamily: "JetBrains Mono, monospace",
+                          fontFamily: "'Space Grotesk', 'Outfit', sans-serif",
                           background: "#D1FAE5",
                         }}
                       >
@@ -134,7 +176,7 @@ export default function CompetenciesPage({ search }: { search: string }) {
                           fontSize: 10,
                           fontWeight: 700,
                           color: coral,
-                          fontFamily: "JetBrains Mono, monospace",
+                          fontFamily: "'Space Grotesk', 'Outfit', sans-serif",
                           background: "#FFF5F3",
                         }}
                       >
@@ -160,7 +202,7 @@ export default function CompetenciesPage({ search }: { search: string }) {
                   </span>
                   <span
                     style={{
-                      fontFamily: "JetBrains Mono, monospace",
+                      fontFamily: "'Space Grotesk', 'Outfit', sans-serif",
                       color: warn ? coral : emerald,
                       fontWeight: 700,
                     }}
@@ -168,7 +210,7 @@ export default function CompetenciesPage({ search }: { search: string }) {
                     {pct}%
                   </span>
                 </div>
-                <div style={{ height: 6, background: panel, border: `1px solid ${border}`, overflow: "hidden" }}>
+                <div style={{ height: 6, background: panel, border: `1px solid ${border}`, overflow: "hidden", borderRadius: 3 }}>
                   <div
                     style={{
                       height: "100%",
@@ -191,7 +233,7 @@ export default function CompetenciesPage({ search }: { search: string }) {
                       gap: 6,
                     }}
                   >
-                    <span style={{ fontWeight: 700, color: slate, fontFamily: "JetBrains Mono, monospace" }}>
+                    <span style={{ fontWeight: 700, color: slate, fontFamily: "'Space Grotesk', 'Outfit', sans-serif" }}>
                       EVIDENCE:
                     </span>
                     <span>{c.evidenceSource}</span>

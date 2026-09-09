@@ -3,6 +3,7 @@
 export type Tab =
   | "landing"
   | "login"
+  | "signup"
   | "dashboard"
   | "competencies"
   | "skill-gaps"
@@ -10,10 +11,10 @@ export type Tab =
   | "assessments"
   | "assessment-result"
   | "assessment-review"
+  | "evidence-audit"
   | "materials"
   | "employees"
   | "integrations"
-  | "analytics"
   | "audit"
   | "settings";
 
@@ -59,7 +60,7 @@ export interface Course {
   id: string;
   title: string;
   provider: string;
-  source: "iGOT" | "DEMO / LOCAL";
+  source: "iGOT" | "LOCAL";
   competency: string;
   level: "Beginner" | "Intermediate" | "Advanced";
   duration: string;
@@ -102,7 +103,7 @@ export interface AssessmentSubmission {
   newLevel: number;
   masteryTier: "Needs Foundation" | "Developing" | "Proficient" | "Strong Mastery";
   sourceDocument: string;
-  sourcePage: number;
+  sourcePage: number | string;
   nextRecommendedCourse: string;
 }
 

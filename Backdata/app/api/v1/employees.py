@@ -12,6 +12,19 @@ from app.db.models.competency import CompetencyHistory
 
 router = APIRouter(prefix="/employees", tags=["Employees"])
 
+@router.get("/me", response_model=EmployeeResponse)
+async def get_my_employee_profile(
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db)
+):
+    """Return the employee record belonging to the authenticated user."""
+    stmt = select(Employee).where(Employee.user_id == current_user.id)
+    res = await db.execute(stmt)
+    employee = res.scalar_one_or_none()
+    if not employee:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Employee profile not found")
+    return employee
+
 @router.get("/{id}", response_model=EmployeeResponse)
 async def get_employee_by_id(
     id: str,

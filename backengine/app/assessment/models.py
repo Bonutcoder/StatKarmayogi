@@ -38,7 +38,8 @@ class AssessmentGenerationRequest(BaseModel):
     competency_id: str
     competency_name: str
     difficulty: int = Field(default=1, ge=1, le=5)
-    question_count: int = Field(default=3, ge=1, le=10)
+    question_count: int = Field(default=15, ge=1, le=15)
+    document_id: Optional[str] = Field(default=None, description="Restrict retrieval to one approved indexed document")
 
 
 class AssessmentSession(BaseModel):

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { employeeDirectoryData } from "../data/mockData";
+import { employeeDirectoryData } from "../data/emptyData";
 import { slate, coral, emerald, muted, border, panel, bg } from "../components/AppShell";
 import { EmptyState } from "../components/UIStates";
 
@@ -50,7 +50,7 @@ export default function EmployeesAdminPage({
 
         {/* Dept Selector */}
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          <span style={{ fontSize: 11, fontWeight: 700, color: muted, fontFamily: "JetBrains Mono, monospace" }}>
+          <span style={{ fontSize: 11, fontWeight: 700, color: muted, fontFamily: "'Space Grotesk', 'Outfit', sans-serif" }}>
             DIVISION:
           </span>
           <select
@@ -98,7 +98,7 @@ export default function EmployeesAdminPage({
                       color: muted,
                       borderBottom: `1px solid ${border}`,
                       borderRight: `1px solid ${border}`,
-                      fontFamily: "JetBrains Mono, monospace",
+                      fontFamily: "'Space Grotesk', 'Outfit', sans-serif",
                       letterSpacing: "0.06em",
                       whiteSpace: "nowrap",
                     }}
@@ -113,18 +113,18 @@ export default function EmployeesAdminPage({
                 <tr key={emp.id} style={{ background: i % 2 === 0 ? "#fff" : bg }}>
                   <td style={{ padding: "12px 14px", borderBottom: `1px solid ${border}`, borderRight: `1px solid ${border}` }}>
                     <div style={{ fontSize: 13, fontWeight: 700, color: slate }}>{emp.name}</div>
-                    <div style={{ fontSize: 11, color: muted, fontFamily: "JetBrains Mono, monospace" }}>{emp.email}</div>
+                    <div style={{ fontSize: 11, color: muted, fontFamily: "'Space Grotesk', 'Outfit', sans-serif" }}>{emp.email}</div>
                   </td>
                   <td style={{ padding: "12px 14px", borderBottom: `1px solid ${border}`, borderRight: `1px solid ${border}` }}>
                     <div style={{ fontSize: 12, color: slate, fontWeight: 500 }}>{emp.designation}</div>
-                    <div style={{ fontSize: 10, color: muted, fontFamily: "JetBrains Mono, monospace" }}>{emp.cadre}</div>
+                    <div style={{ fontSize: 10, color: muted, fontFamily: "'Space Grotesk', 'Outfit', sans-serif" }}>{emp.cadre}</div>
                   </td>
                   <td style={{ padding: "12px 14px", fontSize: 12, color: slate, borderBottom: `1px solid ${border}`, borderRight: `1px solid ${border}` }}>
                     {emp.department}
                   </td>
                   <td style={{ padding: "12px 14px", borderBottom: `1px solid ${border}`, borderRight: `1px solid ${border}` }}>
                     <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                      <span style={{ fontFamily: "JetBrains Mono, monospace", fontSize: 12, fontWeight: 700, color: emp.overallScore >= 70 ? emerald : coral }}>
+                      <span style={{ fontFamily: "'Space Grotesk', 'Outfit', sans-serif", fontSize: 12, fontWeight: 700, color: emp.overallScore >= 70 ? emerald : coral }}>
                         {emp.overallScore}%
                       </span>
                       <div style={{ width: 60, height: 6, background: panel, border: `1px solid ${border}`, overflow: "hidden" }}>
@@ -134,11 +134,11 @@ export default function EmployeesAdminPage({
                   </td>
                   <td style={{ padding: "12px 14px", borderBottom: `1px solid ${border}`, borderRight: `1px solid ${border}` }}>
                     {emp.activeGaps > 0 ? (
-                      <span style={{ padding: "2px 8px", border: `1px solid ${coral}`, background: "#FFF5F3", color: coral, fontSize: 10, fontWeight: 700, fontFamily: "JetBrains Mono, monospace" }}>
+                      <span style={{ padding: "2px 8px", border: `1px solid ${coral}`, background: "#FFF5F3", color: coral, fontSize: 10, fontWeight: 700, fontFamily: "'Space Grotesk', 'Outfit', sans-serif" }}>
                         {emp.activeGaps} GAPS
                       </span>
                     ) : (
-                      <span style={{ padding: "2px 8px", border: `1px solid ${emerald}`, background: "#D1FAE5", color: emerald, fontSize: 10, fontWeight: 700, fontFamily: "JetBrains Mono, monospace" }}>
+                      <span style={{ padding: "2px 8px", border: `1px solid ${emerald}`, background: "#D1FAE5", color: emerald, fontSize: 10, fontWeight: 700, fontFamily: "'Space Grotesk', 'Outfit', sans-serif" }}>
                         ON TARGET
                       </span>
                     )}
@@ -146,7 +146,7 @@ export default function EmployeesAdminPage({
                   <td style={{ padding: "12px 14px", fontSize: 11, color: slate, borderBottom: `1px solid ${border}`, borderRight: `1px solid ${border}` }}>
                     {emp.topCompetency}
                   </td>
-                  <td style={{ padding: "12px 14px", fontSize: 11, color: muted, fontFamily: "JetBrains Mono, monospace", borderBottom: `1px solid ${border}`, borderRight: `1px solid ${border}`, whiteSpace: "nowrap" }}>
+                  <td style={{ padding: "12px 14px", fontSize: 11, color: muted, fontFamily: "'Space Grotesk', 'Outfit', sans-serif", borderBottom: `1px solid ${border}`, borderRight: `1px solid ${border}`, whiteSpace: "nowrap" }}>
                     {emp.lastActive}
                   </td>
                   <td style={{ padding: "12px 14px", borderBottom: `1px solid ${border}` }}>

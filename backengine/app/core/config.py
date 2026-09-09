@@ -5,6 +5,15 @@ Strictly adheres to SECURITY.md: No secrets logged or hardcoded.
 
 from typing import Dict, Any
 import os
+from pathlib import Path
+from dotenv import load_dotenv
+
+
+# The core backend owns the shared deployment secrets. A service-specific .env,
+# when present, can override it without exposing keys to the React client.
+PROJECT_ROOT = Path(__file__).resolve().parents[3]
+load_dotenv(PROJECT_ROOT / "Backdata" / ".env", override=False)
+load_dotenv(PROJECT_ROOT / "backengine" / ".env", override=True)
 
 
 class Settings:
@@ -19,7 +28,10 @@ class Settings:
         # OpenRouter AI Provider Configuration
         self.OPENROUTER_API_KEY: str = os.getenv("OPENROUTER_API_KEY", "")
         self.OPENROUTER_BASE_URL: str = os.getenv("OPENROUTER_BASE_URL", "https://openrouter.ai/api/v1")
-        self.OPENROUTER_DEFAULT_MODEL: str = os.getenv("OPENROUTER_DEFAULT_MODEL", "meta-llama/llama-3-8b-instruct:free")
+        self.OPENROUTER_DEFAULT_MODEL: str = os.getenv(
+            "OPENROUTER_DEFAULT_MODEL",
+            os.getenv("OPENROUTER_MODEL", "meta-llama/llama-3-8b-instruct:free"),
+        )
         self.AI_TIMEOUT_SECONDS: float = float(os.getenv("AI_TIMEOUT_SECONDS", "30.0"))
         self.AI_MAX_RETRIES: int = int(os.getenv("AI_MAX_RETRIES", "2"))
         self.USE_MOCK_AI: bool = os.getenv("USE_MOCK_AI", "false").lower() in ("true", "1", "yes")

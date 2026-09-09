@@ -1,6 +1,7 @@
 import React from "react";
 import { AssessmentSubmission, Tab } from "../types";
 import { slate, coral, emerald, muted, border, panel, bg } from "../components/AppShell";
+import { EmptyState } from "../components/UIStates";
 
 export default function AssessmentResultPage({
   submission,
@@ -9,20 +10,22 @@ export default function AssessmentResultPage({
   submission: AssessmentSubmission | null;
   setTab: (t: Tab) => void;
 }) {
-  // Fallback if accessed directly
-  const data: AssessmentSubmission = submission || {
-    competency: "Survey Methodology",
-    difficulty: "Intermediate",
-    score: 4,
-    total: 5,
-    percentage: 80,
-    previousLevel: 3,
-    newLevel: 4,
-    masteryTier: "Strong Mastery",
-    sourceDocument: "Survey Methodology Handbook",
-    sourcePage: 18,
-    nextRecommendedCourse: "Modern Survey Sampling & Two-Stage Cluster Design",
-  };
+  if (!submission) {
+    return (
+      <div style={{ flex: 1, padding: 36, display: "flex", justifyContent: "center" }}>
+        <div style={{ width: "100%", maxWidth: 760 }}>
+          <EmptyState
+            title="No Assessment Submission"
+            description="You have not submitted an assessment yet. Please start an official assessment to view your results."
+            actionLabel="Go to Assessments"
+            onAction={() => setTab("assessments")}
+          />
+        </div>
+      </div>
+    );
+  }
+
+  const data = submission;
 
   const getTierBadge = (tier: AssessmentSubmission["masteryTier"]) => {
     switch (tier) {
@@ -44,7 +47,7 @@ export default function AssessmentResultPage({
       <div style={{ width: "100%", maxWidth: 760 }}>
         {/* Header */}
         <div style={{ marginBottom: 24, paddingBottom: 16, borderBottom: `1px solid ${border}` }}>
-          <div style={{ fontSize: 11, fontWeight: 700, color: coral, fontFamily: "JetBrains Mono, monospace", letterSpacing: "0.1em" }}>
+          <div style={{ fontSize: 11, fontWeight: 700, color: coral, fontFamily: "'Space Grotesk', 'Outfit', sans-serif", letterSpacing: "0.1em" }}>
             OFFICIAL EVALUATION RESULT · RECORD SAVED
           </div>
           <h1 style={{ fontSize: 24, fontWeight: 800, color: slate, margin: "6px 0 4px" }}>
@@ -60,203 +63,119 @@ export default function AssessmentResultPage({
           style={{
             background: "#fff",
             border: `1px solid ${border}`,
-            padding: 32,
-            marginBottom: 24,
+            padding: "28px 32px",
+            marginBottom: 20,
             display: "grid",
-            gridTemplateColumns: "220px 1fr",
-            gap: 32,
+            gridTemplateColumns: "1fr 1fr 1fr",
+            gap: 20,
             alignItems: "center",
           }}
         >
-          {/* Big Score Dial */}
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              justifyContent: "center",
-              borderRight: `1px solid ${border}`,
-              paddingRight: 24,
-            }}
-          >
-            <div
-              style={{
-                fontSize: 54,
-                fontWeight: 800,
-                color: data.percentage >= 60 ? emerald : coral,
-                fontFamily: "JetBrains Mono, monospace",
-                lineHeight: 1,
-              }}
-            >
-              {data.percentage}%
+          <div>
+            <div style={{ fontSize: 11, color: muted, fontWeight: 700, fontFamily: "'Space Grotesk', 'Outfit', sans-serif", letterSpacing: "0.06em", marginBottom: 6 }}>
+              FINAL SCORE
             </div>
-            <div style={{ fontSize: 12, color: muted, marginTop: 6, fontWeight: 600 }}>
-              {data.score} of {data.total} Correct Answers
+            <div style={{ fontSize: 36, fontWeight: 800, color: slate }}>
+              {data.score} <span style={{ fontSize: 18, color: muted, fontWeight: 600 }}>/ {data.total}</span>
+            </div>
+            <div style={{ fontSize: 13, fontWeight: 700, color: data.percentage >= 60 ? emerald : coral, marginTop: 2 }}>
+              {data.percentage}% Accuracy
+            </div>
+          </div>
+
+          <div style={{ borderLeft: `1px solid ${border}`, borderRight: `1px solid ${border}`, padding: "0 20px" }}>
+            <div style={{ fontSize: 11, color: muted, fontWeight: 700, fontFamily: "'Space Grotesk', 'Outfit', sans-serif", letterSpacing: "0.06em", marginBottom: 6 }}>
+              MASTERY LEVEL
+            </div>
+            <div style={{ display: "flex", alignItems: "baseline", gap: 8 }}>
+              <div style={{ fontSize: 28, fontWeight: 800, color: slate }}>L{data.newLevel}</div>
+              {data.newLevel > data.previousLevel && (
+                <div style={{ fontSize: 12, fontWeight: 700, color: emerald }}>▲ Level Up</div>
+              )}
             </div>
             <div
               style={{
-                marginTop: 14,
-                padding: "4px 12px",
+                display: "inline-block",
+                padding: "2px 8px",
+                borderRadius: 2,
                 background: badge.bg,
                 border: `1px solid ${badge.border}`,
                 color: badge.color,
-                fontSize: 11,
+                fontSize: 10,
                 fontWeight: 800,
-                fontFamily: "JetBrains Mono, monospace",
-                letterSpacing: "0.06em",
+                marginTop: 4,
               }}
             >
-              {data.masteryTier.toUpperCase()}
+              {data.masteryTier}
             </div>
           </div>
 
-          {/* Competency Delta Progression */}
           <div>
-            <div style={{ fontSize: 11, fontWeight: 700, color: muted, fontFamily: "JetBrains Mono, monospace" }}>
-              COMPETENCY EVALUATED
+            <div style={{ fontSize: 11, color: muted, fontWeight: 700, fontFamily: "'Space Grotesk', 'Outfit', sans-serif", letterSpacing: "0.06em", marginBottom: 6 }}>
+              TARGET COMPETENCY
             </div>
-            <div style={{ fontSize: 18, fontWeight: 800, color: slate, marginTop: 4, marginBottom: 14 }}>
-              {data.competency} ({data.difficulty})
-            </div>
-
-            {/* Level Movement Box */}
-            <div style={{ padding: "12px 16px", background: panel, border: `1px solid ${border}`, marginBottom: 16 }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                <div>
-                  <div style={{ fontSize: 10, color: muted, fontFamily: "JetBrains Mono, monospace" }}>
-                    OFFICIAL STATUS UPDATE
-                  </div>
-                  <div style={{ fontSize: 14, fontWeight: 700, color: slate, marginTop: 2 }}>
-                    Level {data.previousLevel} → Level {data.newLevel}
-                  </div>
-                </div>
-                {data.newLevel > data.previousLevel && (
-                  <span
-                    style={{
-                      padding: "3px 10px",
-                      background: "#D1FAE5",
-                      border: "1px solid #059669",
-                      color: "#059669",
-                      fontSize: 10,
-                      fontWeight: 800,
-                      fontFamily: "JetBrains Mono, monospace",
-                    }}
-                  >
-                    +1 LEVEL PROMOTED
-                  </span>
-                )}
-              </div>
-            </div>
-
-            {/* Source Evidence Citation */}
-            <div style={{ fontSize: 12, color: muted, lineHeight: 1.6 }}>
-              <span style={{ fontWeight: 700, color: slate }}>Authoritative Evidence: </span>
-              {data.sourceDocument} · Page {data.sourcePage}
-            </div>
+            <div style={{ fontSize: 14, fontWeight: 700, color: slate }}>{data.competency}</div>
+            <div style={{ fontSize: 11, color: muted, marginTop: 2 }}>Difficulty: {data.difficulty}</div>
           </div>
         </div>
 
-        {/* 4-Tier Mastery Reference Scale (from PRD.md § 6) */}
-        <div style={{ background: "#fff", border: `1px solid ${border}`, padding: 20, marginBottom: 24 }}>
-          <div style={{ fontSize: 11, fontWeight: 700, color: muted, fontFamily: "JetBrains Mono, monospace", marginBottom: 12 }}>
-            OFFICIAL MOSPI MASTERY THRESHOLDS (PRD §6)
+        {/* Verification Source Citation */}
+        <div style={{ background: "#F8FAFC", border: `1px solid ${border}`, padding: "18px 24px", marginBottom: 20 }}>
+          <div style={{ fontSize: 11, fontWeight: 700, color: slate, fontFamily: "'Space Grotesk', 'Outfit', sans-serif", letterSpacing: "0.06em", marginBottom: 8 }}>
+            GROUND TRUTH VERIFICATION
           </div>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 10 }}>
-            {[
-              { range: "0–39%", label: "Needs Foundation", active: data.percentage < 40 },
-              { range: "40–59%", label: "Developing", active: data.percentage >= 40 && data.percentage < 60 },
-              { range: "60–79%", label: "Proficient", active: data.percentage >= 60 && data.percentage < 80 },
-              { range: "80–100%", label: "Strong Mastery", active: data.percentage >= 80 },
-            ].map((t) => (
-              <div
-                key={t.range}
-                style={{
-                  padding: "10px",
-                  border: `1px solid ${t.active ? coral : border}`,
-                  background: t.active ? "#FFF5F3" : panel,
-                  textAlign: "center",
-                }}
-              >
-                <div style={{ fontSize: 12, fontWeight: 800, color: t.active ? coral : slate, fontFamily: "JetBrains Mono, monospace" }}>
-                  {t.range}
-                </div>
-                <div style={{ fontSize: 11, color: t.active ? coral : muted, marginTop: 2, fontWeight: t.active ? 700 : 500 }}>
-                  {t.label}
-                </div>
-              </div>
-            ))}
+          <div style={{ fontSize: 13, color: muted, lineHeight: 1.6 }}>
+            Questions and evaluations were verified against official training module{" "}
+            <span style={{ color: slate, fontWeight: 600 }}>{data.sourceDocument}</span> (Page {data.sourcePage}).
           </div>
         </div>
 
-        {/* Next Recommendation Step */}
-        <div
-          style={{
-            background: "#fff",
-            border: `2px solid ${emerald}`,
-            padding: 24,
-            marginBottom: 24,
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-          }}
-        >
-          <div>
-            <div style={{ fontSize: 10, fontWeight: 700, color: emerald, fontFamily: "JetBrains Mono, monospace" }}>
-              RECOMMENDED NEXT ACTION IN CLOSED LOOP
-            </div>
-            <div style={{ fontSize: 15, fontWeight: 800, color: slate, marginTop: 4 }}>
-              {data.nextRecommendedCourse}
-            </div>
-            <div style={{ fontSize: 12, color: muted, marginTop: 4 }}>
-              Continue building on your updated {data.competency} foundation.
-            </div>
-          </div>
-          <button
-            onClick={() => setTab("learning")}
-            style={{
-              padding: "10px 20px",
-              background: emerald,
-              border: "none",
-              color: "#fff",
-              fontSize: 12,
-              fontWeight: 700,
-              cursor: "pointer",
-              whiteSpace: "nowrap",
-            }}
-          >
-            Start Course →
-          </button>
-        </div>
-
-        {/* Action Buttons */}
-        <div style={{ display: "flex", gap: 12 }}>
-          <button
-            onClick={() => setTab("dashboard")}
-            style={{
-              padding: "12px 24px",
-              background: slate,
-              border: "none",
-              color: "#fff",
-              fontSize: 13,
-              fontWeight: 700,
-              cursor: "pointer",
-            }}
-          >
-            Return to Dashboard
-          </button>
+        {/* Action Row */}
+        <div style={{ display: "flex", gap: 12, justifyContent: "flex-end" }}>
           <button
             onClick={() => setTab("assessment-review")}
             style={{
-              padding: "12px 22px",
+              padding: "10px 20px",
+              background: "#F0FDF4",
+              border: `1px solid ${emerald}`,
+              color: emerald,
+              fontSize: 13,
+              fontWeight: 700,
+              cursor: "pointer",
+              borderRadius: 4,
+            }}
+          >
+            🔍 Review Detailed Question Audit →
+          </button>
+          <button
+            onClick={() => setTab("competencies")}
+            style={{
+              padding: "10px 22px",
               background: "#fff",
               border: `1px solid ${border}`,
               color: slate,
               fontSize: 13,
-              fontWeight: 600,
+              fontWeight: 700,
               cursor: "pointer",
+              borderRadius: 4,
             }}
           >
-            Inspect Question Review & Citations
+            View Competencies
+          </button>
+          <button
+            onClick={() => setTab("learning")}
+            style={{
+              padding: "10px 24px",
+              background: coral,
+              border: `1px solid ${coral}`,
+              color: "#fff",
+              fontSize: 13,
+              fontWeight: 700,
+              cursor: "pointer",
+              borderRadius: 4,
+            }}
+          >
+            Explore Next Courses →
           </button>
         </div>
       </div>

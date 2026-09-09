@@ -54,7 +54,12 @@ class AssessmentGenerator:
             department_id=request.department_id,
             query=query,
             top_k=self.settings.RAG_TOP_K,
+            min_similarity=0.0 if request.document_id else None,
         )
+        if request.document_id:
+            chunks = [chunk for chunk in chunks if chunk.get("document_id") == request.document_id]
+        if not chunks:
+            raise ValueError("No indexed evidence was found for the selected document.")
 
         # Step 2: Invoke AI inference with fallback retry
         valid_mcqs: List[MCQQuestion] = []
@@ -66,7 +71,7 @@ class AssessmentGenerator:
                 count=request.question_count,
             )
             # Step 3: Validate contract
-            valid_mcqs = MCQValidator.validate_batch(raw_mcqs)
+            valid_mcqs = MCQValidator.validate_batch(raw_mcqs)[:request.question_count]
         except Exception:
             # AI failure -> fallback to mock provider for continuity
             from backengine.app.ai.mock_ai import MockAIProvider
@@ -77,7 +82,7 @@ class AssessmentGenerator:
                 context_chunks=chunks,
                 count=request.question_count,
             )
-            valid_mcqs = MCQValidator.validate_batch(raw_mcqs)
+            valid_mcqs = MCQValidator.validate_batch(raw_mcqs)[:request.question_count]
 
         # Ensure all questions have unique IDs
         for idx, q in enumerate(valid_mcqs, 1):

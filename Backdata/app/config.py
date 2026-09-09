@@ -17,6 +17,9 @@ class Settings(BaseSettings):
     NEXT_PUBLIC_SUPABASE_ANON_KEY: str = "anon-key-placeholder"
     SUPABASE_SERVICE_ROLE_KEY: Optional[str] = None
     SUPABASE_JWT_SECRET: str = "super-secret-jwt-key-placeholder-for-dev-auth"
+    GITHUB_CLIENT_ID: Optional[str] = None
+    GITHUB_CLIENT_SECRET: Optional[str] = None
+    APP_FRONTEND_URL: str = "http://localhost:8443"
     
     # Storage settings
     STORAGE_LOCAL_ROOT: str = "./private_storage"
